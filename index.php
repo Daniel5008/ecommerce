@@ -64,7 +64,7 @@ $app->get("/admin/users" , function () {
 
 	$page = new PageAdmin();
 	$page->setTpl("users", array(
-		"users"=>$users
+		"users"=>$users //varivel passada pra template, todas devem ser passadas por array apos o primeiro param(template)
 	));
 
 });
@@ -288,6 +288,21 @@ $app->post("/admin/categories/:idcategory", function ($idcategory) {
 
 	header("Location: /admin/categories");
 	exit;
+
+});
+
+$app->get("/categories/:idcategory", function ($idcategory){
+
+	$category = new Category();
+
+	$category->get(intval($idcategory));
+
+	$page = new Page();
+
+	$page->setTpl("category", [
+		"category"=>$category->getValues(), 
+
+	]);
 
 });
 
