@@ -70,6 +70,66 @@ class Category extends Model {
         file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode("", $html));
 
     }
+
+    public function getProducts($related = true)
+    {
+
+        $sql = new Sql();
+
+        if ($related === true) {
+
+            return $sql->select("SELECT * FROM tb_products WHERE tb_products.idproduct IN (
+                                    SELECT tb_products.idproduct
+                                    FROM tb_products
+                                    INNER JOIN tb_categoriesproducts ON tb_products.idproduct = tb_categoriesproducts.idproduct
+                                    WHERE tb_categoriesproducts.idcategory = :idcategory
+                                );", array(
+                                        ":idcategory"=>$this->getidcategory()
+                                    ));
+
+        } else {
+
+            return $sql->select("SELECT * FROM tb_products WHERE tb_products.idproduct NOT IN (
+                                    SELECT tb_products.idproduct 
+                                    FROM tb_products
+                                    INNER JOIN tb_categoriesproducts ON tb_products.idproduct = tb_categoriesproducts.idproduct
+                                    WHERE tb_categoriesproducts.idcategory = :idcategory
+                                );", array(
+                                        ":idcategory"=>$this->getidcategory()
+                                    ));
+
+        }
+
+    } 
+
+
+    public function addProduct ($idproduct)
+    {
+
+        $sql = new Sql();
+
+        $sql->query("INSERT INTO tb_categoriesproducts (idcategory, idproduct)
+                        VALUES (:idcategory, :idproduct)", array (
+                            "idcategory"=>$this->getidcategory(),
+                            "idproduct"=>$idproduct
+                        ));
+    }
+
+
+    public function removeProduct ($idproduct)
+    {
+
+        $sql = new Sql();
+
+        $sql->query("DELETE FROM tb_categoriesproducts WHERE idcategory = :idcategory AND idproduct = :idproduct", array (
+                                    "idcategory"=>$this->getidcategory(),
+                                    "idproduct"=>$idproduct
+                                )
+                            );
+    }
+
+
 }
+
 
 ?>
