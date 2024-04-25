@@ -17,17 +17,47 @@ $app->get('/', function() {
 
 $app->get("/categories/:idcategory", function ($idcategory){
 
+	$pageNumber = (isset($_GET["page"])) ? intval($_GET["page"]) : 1;
+
 	$category = new Category();
 
 	$category->get(intval($idcategory));
+
+	$pagination = $category->getProductsPage($pageNumber);
+
+	$pages = array();
+
+	for ($i=1; $i <= $pagination["pages"]; $i++) { 
+		array_push($pages, array(
+			"link"=>"/categories/".$category->getidcategory()."?page=".$i,
+			"page"=>$i
+		));
+	}
 
 	$page = new Page();
 
 	$page->setTpl("category", [
 		"category"=>$category->getValues(), 
-		"products"=>Product::checkList($category->getProducts())
+		"products"=>$pagination["data"],
+		"pages"=>$pages
 	]);
 
 });
 
+
+$app->get("/products/:desurl", function($desurl){
+
+	$product = new Product();
+
+	$product->getFromURL($desurl);
+
+	$page = new Page();
+
+	$page->setTpl("product-detail", array(
+		"product"=>$product->getValues(),
+		"categories"=>$product->getCategories()
+	));
+
+
+});
 ?>
