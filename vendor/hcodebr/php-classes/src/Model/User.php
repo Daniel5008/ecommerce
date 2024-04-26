@@ -15,6 +15,45 @@ class User extends Model {
 	const ERROR_REGISTER = "UserErrorRegister";
 	const SUCCESS = "UserSucesss";
 
+    public static function getFromSession () 
+    {
+
+        $user = new User();
+
+        if (isset($_SESSION[User::SESSION]) && intval($_SESSION[User::SESSION]["iduser"]) > 0) {
+
+            $user->setData($_SESSION[User::SESSION]);
+
+        }
+
+        return $user;
+
+    }
+
+    public static function checkLogin($inadmin = true){
+
+        if (!isset($_SESSION[User::SESSION]) || !$_SESSION[User::SESSION] || !intval($_SESSION[User::SESSION]["iduser"]) > 0) { // não esta logado
+            
+            return false;
+
+        } else {
+            if($inadmin === true && boolval($_SESSION[User::SESSION]["inadmin"]) === true) { //está logado e em rota de administração
+
+                return true;
+
+            } else if ($inadmin === false) { // está logado mas não esta em rota de administração 
+                
+                return true;
+
+            } else {
+
+                return false;
+
+            }
+        }
+
+    }
+
     public static function login($login, $password) {
 
         $sql = new Sql();
@@ -47,7 +86,7 @@ class User extends Model {
 
     public static function verifyLogin($inadmin = true)
     {
-        if (!isset($_SESSION[User::SESSION]) || !$_SESSION[User::SESSION] || !intval($_SESSION[User::SESSION]["iduser"]) > 0 || boolval($_SESSION[User::SESSION]["inadmin"]) !== $inadmin) {
+        if (User::checkLogin($inadmin)) {
             header("Location: /admin/login");
             exit;
         }
