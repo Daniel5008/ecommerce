@@ -123,5 +123,17 @@ $app->get("/cart/:idproduct/remove", function ($idproduct){
 
 });
 
+$app->post("/cart/freight", function() {
+
+	$cart = Cart::getFromSession();
+
+	//$cart->setFreight($_POST['zipcode']);
+	//colocar algo ilustrativo talvez pois o frete ñ sera calculado
+
+	header("Location: /cart");
+	exit;
+
+});
+
 
 ?>
