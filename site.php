@@ -4,6 +4,8 @@ use \hcode\Page;
 use \hcode\Model\Product;
 use \hcode\Model\Category;
 use \hcode\Model\Cart;
+use \hcode\Model\Address;
+use \hcode\Model\User;
 
 $app->get('/', function() {
 
@@ -132,6 +134,64 @@ $app->post("/cart/freight", function() {
 	//colocar algo ilustrativo talvez pois o frete ñ sera calculado
 
 	header("Location: /cart");
+	exit;
+
+});
+
+
+$app->get("/checkout", function() {
+
+	User::verifyLogin(false);
+
+	$cart = Cart::getFromSession();
+
+	$address = new Address();
+
+	$page = new Page();
+
+	$page->setTpl("checkout" , array(
+		"cart"=>$cart->getValues(),
+		"address"=>$address->getValues()
+	));
+
+});
+
+
+$app->get("/login", function() {
+
+	$page = new Page();
+
+	$page->setTpl("login", array(
+		"error"=>User::getError()
+	));
+
+});
+
+
+$app->post("/login", function() {
+
+	try {
+
+		User::Login($_POST["login"], $_POST["password"]);
+
+	} catch (Exception $e) {
+
+		User::setError($e->getMessage());
+
+	}
+
+
+	header("Location: /checkout");
+	exit;
+
+});
+
+
+$app->get("/logout", function() {
+
+	User::logout();
+
+	header("Location: /login");
 	exit;
 
 });
