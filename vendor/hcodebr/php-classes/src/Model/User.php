@@ -170,7 +170,7 @@ class User extends Model {
 
     }
 
-    public static function getForgot($email)
+    public static function getForgot($email, $inadmin = true)
     {
 
         $sql = new Sql();
@@ -207,7 +207,12 @@ class User extends Model {
 
                 base64_encode($code);
 
-                $link = "http://localhost/admin/forgot/reset?code=$code";
+                if ($inadmin === true) {
+                    $link = "http://localhost/admin/forgot/reset?code=$code";
+                } else {
+                    $link = "http://localhost/forgot/reset?code=$code";
+                }
+
 
                 $mailer = new Mailer($data["desemail"], $data["desperson"], "Redefinir senha Daniel Store", "forgot", 
                     array(
@@ -312,6 +317,41 @@ class User extends Model {
 		return password_hash($password, PASSWORD_DEFAULT, [
 			'cost' => 12
 		]);
+	}
+
+    public static function setErrorRegister($msg)
+	{
+
+		$_SESSION[User::ERROR_REGISTER] = $msg;
+	}
+
+	public static function getErrorRegister()
+	{
+
+		$msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
+
+		User::clearErrorRegister();
+
+		return $msg;
+	}
+
+	public static function clearErrorRegister()
+	{
+
+		$_SESSION[User::ERROR_REGISTER] = NULL;
+	}
+
+
+    public static function checkLoginExist($login)
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+			':deslogin' => $login
+		]);
+
+		return (count($results) > 0);
 	}
 
 }
