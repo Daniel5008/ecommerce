@@ -6,7 +6,7 @@ class Model {
 
     private $values = []; //array to keep the class data 
 
-    public function __call($name, $args) { //function which is called in every 'call' of the class
+    public function __call($name, $args) { //method which is called in every 'call' of the class
 
         $method = substr($name, 0, 3);
         $fieldName = substr($name, 3, strlen($name));

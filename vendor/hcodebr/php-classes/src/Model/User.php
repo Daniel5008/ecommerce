@@ -58,7 +58,7 @@ class User extends Model {
 
         $sql = new Sql();
 
-        $result = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
+        $result = $sql->select("SELECT * FROM tb_users INNER JOIN tb_persons USING(idperson) WHERE deslogin = :LOGIN", array(
             ":LOGIN"=>$login
         ));
 
@@ -96,7 +96,6 @@ class User extends Model {
             }
 
             exit;
-            
         }
     }
 
@@ -309,6 +308,28 @@ class User extends Model {
 
 		$_SESSION[User::ERROR] = NULL;
 
+	}
+
+    public static function setSuccess($msg)
+	{
+
+		$_SESSION[User::SUCCESS] = $msg;
+	}
+
+	public static function getSuccess()
+	{
+
+		$msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+
+		User::clearSuccess();
+
+		return $msg;
+	}
+
+	public static function clearSuccess()
+	{
+
+		$_SESSION[User::SUCCESS] = NULL;
 	}
 
     public static function getPasswordHash($password)
