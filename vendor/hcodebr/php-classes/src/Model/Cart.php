@@ -203,7 +203,12 @@ class Cart extends Model {
 
 		$totals = $this->getProductsTotals();
 
-		if ($totals['nrqtd'] > 0) {
+        $this->setdeszipcode($nrzipcode);
+        $this->setnrdays(20);
+	    $this->setvlfreight(Cart::formatValueToDecimal(25));
+
+
+		/*if ($totals['nrqtd'] > 0) {
 
 			if ($totals['vlheight'] < 2) $totals['vlheight'] = 2;
 			if ($totals['vllength'] < 16) $totals['vllength'] = 16;
@@ -245,7 +250,7 @@ class Cart extends Model {
 
 			return $result;
 		} else {
-		}
+		}*/
 	}
 
     public static function formatValueToDecimal($value): float
