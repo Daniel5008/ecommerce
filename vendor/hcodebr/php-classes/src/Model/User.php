@@ -335,9 +335,9 @@ class User extends Model {
     public static function getPasswordHash($password)
 	{
 
-		return password_hash($password, PASSWORD_DEFAULT, [
+		return password_hash($password, PASSWORD_DEFAULT, array(
 			'cost' => 12
-		]);
+        ));
 	}
 
     public static function setErrorRegister($msg)
@@ -368,9 +368,9 @@ class User extends Model {
 
 		$sql = new Sql();
 
-		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", array(
 			':deslogin' => $login
-		]);
+        ));
 
 		return (count($results) > 0);
 	}
