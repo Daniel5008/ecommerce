@@ -4,17 +4,47 @@ use hcode\Model\User;
 use hcode\PageAdmin;
 use hcode\Model\Product;
 
-$app->get("/admin/products" , function (){
+$app->get("/admin/products", function(){
 
-    User::verifyLogin();
+	User::verifyLogin();
 
-    $products = Product::listAll();
+	$search = (isset($_GET["search"])) ? $_GET["search"] : "";
+	$page = (isset($_GET["page"])) ? intval($_GET["page"]) : 1;
 
-    $page = new PageAdmin();
+	if ($search != "") {
 
-    $page->setTpl("products", array(
-        "products"=>$products
-    ));
+		$pagination = Product::getPageSearch($search, $page);
+
+	} else {
+
+		$pagination = Product::getPage($page);
+
+	}
+
+	$pages = array();
+
+	for ($x = 0; $x < $pagination["pages"]; $x++)
+	{
+
+		array_push($pages, [
+			"href"=>"/admin/products?".http_build_query([
+				"page"=>$x+1,
+				"search"=>$search
+			]),
+			"text"=>$x+1
+		]);
+
+	}
+
+	$products = Product::listAll();
+
+	$page = new PageAdmin();
+
+	$page->setTpl("products", [
+		"products"=>$pagination['data'],
+		"search"=>$search,
+		"pages"=>$pages
+	]);
 
 });
 
